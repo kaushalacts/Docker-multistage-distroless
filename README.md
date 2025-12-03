@@ -1,14 +1,21 @@
-🚀 Python Distroless Application
+ 
+
+---
+
+# Python Distroless Application
 
 This project demonstrates how to containerize a Python application using:
 
-Standard Docker image (Python runtime)
-
-Optimized Distroless image with PyInstaller (binary-only, ultra-light)
+1. Standard Docker image (Python runtime)
+2. Optimized Distroless image with PyInstaller (binary-only)
 
 The goal is to reduce image size for production workloads while maintaining security and performance.
 
-📌 Project Structure
+---
+
+## Project Structure
+
+```
 python-distroless-app/
 │── app/
 │   ├── main.py
@@ -17,67 +24,117 @@ python-distroless-app/
 │── Dockerfile.distroless
 │── .dockerignore
 │── README.md
+```
 
-🔥 What this project solves
-Build Type	Image Size	Includes Python?	Recommended For
-Dockerfile.normal	~226 MB	Yes	Development
-Dockerfile.distroless	~30 MB (can go <15MB with UPX)	No	Production / Edge workloads
+---
 
-The Distroless build ships only the compiled executable — no shell, no package manager → minimal attack surface and small footprint.
+## What this project solves
 
-🧪 Run the Application Without Docker
+| Build Type            | Image Size | Includes Python? | Recommended For |
+| --------------------- | ---------- | ---------------- | --------------- |
+| Dockerfile.normal     | ~226 MB    | Yes              | Development     |
+| Dockerfile.distroless | ~30 MB     | No               | Production      |
+
+Distroless build ships only the compiled executable — no shell, no package manager, minimal attack surface and small size.
+
+---
+
+## Run the application without Docker
+
+```
 pip install -r requirements.txt
 python app/main.py
+```
 
-🐳 Build & Run Normal Docker Image
-Build
+---
+
+## Build & run normal Docker image
+
+Build:
+
+```
 docker build -t python-distroless:normal -f Dockerfile.normal .
+```
 
-Run
+Run:
+
+```
 docker run -p 8080:8080 python-distroless:normal
+```
 
-🐳 Build & Run Distroless Optimized Image
-Build
+---
+
+## Build & run Distroless optimized image
+
+Build:
+
+```
 docker build -t python-distroless:distro-1 -f Dockerfile.distroless .
+```
 
-Run
+Run:
+
+```
 docker run -p 8080:8080 python-distroless:distro-1
+```
 
+If debugging is required (since distroless has no shell):
 
-⛔ Note: Distroless does not include a shell.
-To override the entrypoint for debugging:
-
+```
 docker run --entrypoint "" python-distroless:distro-1 /app/app
+```
 
-🧹 .dockerignore (Best Practice)
+---
+
+## .dockerignore (recommended)
+
+```
 __pycache__
 *.pyc
 *.log
 dist/
 build/
 .env
+```
 
-📦 Environment Variables (Optional)
+---
 
-If your app requires configuration, create .env:
+## Environment variables (optional)
 
+If needed, create a `.env` file:
+
+```
 PORT=8080
+```
 
+Load in Python using `os.getenv`.
 
-Then load inside Python using os.getenv.
+---
 
-🛡 Why Distroless?
-Benefit	Explanation
-Security	No shell, no package manager → reduced attack surface
-Performance	Faster startup due to static binary
-Size	~10–30 MB vs 200+ MB
-Production-ready	Immutable and minimal
-📍 When to Use Which Image?
-Use Case	Recommended Image
-Development & debugging	python:3.11-slim via Dockerfile.normal
-Production deployment	Distroless (Dockerfile.distroless)
-IoT / Edge devices	Distroless + UPX compression
+## Why Distroless?
+
+| Benefit          | Explanation                       |
+| ---------------- | --------------------------------- |
+| Security         | No shell and no package manager   |
+| Size             | ~10–30 MB instead of 200+ MB      |
+| Fast             | Fast startup due to single binary |
+| Production-ready | Immutable and minimal             |
+
+---
+
+## When to use which image
+
+| Use Case                | Recommended Image              |
+| ----------------------- | ------------------------------ |
+| Development / Debugging | Dockerfile.normal              |
+| Production              | Dockerfile.distroless          |
+| Edge / IoT devices      | Dockerfile.distroless with UPX |
+
+---
+
  
-👨‍💻 Author
+## Author
 
 Maintained by Kaushal Kishore.
+
+ 
