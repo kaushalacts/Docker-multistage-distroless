@@ -78,7 +78,6 @@ Development & debugging	python:3.11-slim via Dockerfile.normal
 Production deployment	Distroless (Dockerfile.distroless)
 IoT / Edge devices	Distroless + UPX compression
  
-
 👨‍💻 Author
 
 Maintained by Kaushal Kishore.
