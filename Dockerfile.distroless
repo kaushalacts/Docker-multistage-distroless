@@ -1,0 +1,35 @@
+# -------------------------
+# Build stage
+# -------------------------
+FROM python:3.11-slim AS builder
+
+# Install system dependencies required for PyInstaller
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        gcc \
+        binutils \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt ./
+RUN pip install --upgrade pip && pip install pyinstaller && pip install -r requirements.txt
+
+COPY app /app
+WORKDIR /app
+
+# Build single executable
+RUN pyinstaller main.py --onefile --name app
+
+# -------------------------
+# Final stage — Static distroless image
+# -------------------------
+FROM gcr.io/distroless/static:latest
+WORKDIR /app
+
+# Copy compiled binary only
+COPY --from=builder /app/dist/app /app/app
+
+EXPOSE 8080
+ENTRYPOINT ["/app/app"]

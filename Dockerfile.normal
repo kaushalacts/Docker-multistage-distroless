@@ -1,0 +1,29 @@
+# -------------------------
+# Build stage
+# -------------------------
+FROM python:3.11-slim AS builder
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY requirements.txt ./
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+
+COPY app /app
+
+# -------------------------
+# Final stage runtime image
+# -------------------------
+FROM python:3.11-slim
+WORKDIR /app
+
+COPY --from=builder /opt/venv /opt/venv
+COPY --from=builder /app /app
+ENV PATH="/opt/venv/bin:$PATH"
+
+EXPOSE 8080
+CMD ["python", "main.py"]
